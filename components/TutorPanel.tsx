@@ -1,31 +1,43 @@
-
 import React, { useEffect, useRef } from 'react';
 import type { TutorMessage } from '../types';
 import { MessageSource } from '../types';
 import { Spinner } from './Spinner';
+import useStore from '../store';
+import { Card } from './Card';
+import { AiIcon, UserIcon } from '../constants';
 
-interface TutorPanelProps {
-    messages: TutorMessage[];
-    isLoading: boolean;
-    error: string | null;
+interface MessageBubbleProps {
+    message: TutorMessage;
 }
 
-const MessageBubble: React.FC<{ message: TutorMessage }> = ({ message }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     const isAI = message.source === MessageSource.AI;
-    const bubbleClasses = isAI
-        ? 'bg-cyan-800/50 self-start text-left rounded-r-lg rounded-bl-lg'
-        : 'bg-gray-700 self-end text-right rounded-l-lg rounded-br-lg';
+
+    if (message.source === MessageSource.SYSTEM) {
+        return (
+            <div className="w-full flex justify-center">
+                <div className="max-w-lg p-2 text-center text-xs text-gray-400">
+                    <p>{message.text}</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className={`w-full flex ${isAI ? 'justify-start' : 'justify-end'}`}>
-            <div className={`max-w-lg p-3 whitespace-pre-wrap ${bubbleClasses}`}>
-                 <p className="text-gray-200">{message.text}</p>
+        <div className={`w-full flex gap-3 ${isAI ? 'justify-start' : 'justify-end'}`}>
+            {isAI && <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0"><AiIcon className="w-5 h-5 text-cyan-400" /></div>}
+            <div className={`max-w-lg p-3 rounded-lg whitespace-pre-wrap ${isAI ? 'bg-gray-700' : 'bg-cyan-600'}`}>
+                <p className="text-white">{message.text}</p>
             </div>
+            {!isAI && <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center flex-shrink-0"><UserIcon className="w-5 h-5 text-gray-300" /></div>}
         </div>
     );
 };
 
-export const TutorPanel: React.FC<TutorPanelProps> = ({ messages, isLoading, error }) => {
+export const TutorPanel: React.FC = () => {
+    const messages = useStore(state => state.tutorMessages);
+    const isLoading = useStore(state => state.isLoading);
+    const error = useStore(state => state.error);
     const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -33,10 +45,7 @@ export const TutorPanel: React.FC<TutorPanelProps> = ({ messages, isLoading, err
     }, [messages, isLoading]);
 
     return (
-        <div className="bg-gray-800 rounded-lg shadow-2xl flex flex-col h-full border border-gray-700">
-            <div className="p-4 border-b border-gray-700">
-                <h2 className="text-xl font-semibold text-white">AI Tutor</h2>
-            </div>
+        <Card title="AI Tutor">
             <div className="flex-grow p-4 overflow-y-auto space-y-4">
                 {messages.map((msg, index) => (
                     <MessageBubble key={index} message={msg} />
@@ -53,6 +62,6 @@ export const TutorPanel: React.FC<TutorPanelProps> = ({ messages, isLoading, err
                 )}
                 <div ref={endOfMessagesRef} />
             </div>
-        </div>
+        </Card>
     );
 };

@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import type { BuggyCodeResponse } from '../types';
 
@@ -8,19 +7,27 @@ if (!process.env.API_KEY) {
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-const model = 'gemini-2.5-flash';
+const model = 'gemini-1.5-flash';
 
-export const generateBuggyCode = async (topic: string): Promise<BuggyCodeResponse> => {
+type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced';
+
+export const generateBuggyCode = async (topic: string, language: string, difficulty: Difficulty): Promise<BuggyCodeResponse> => {
     const prompt = `
-        You are an expert programming instructor creating a learning exercise.
+        You are an expert programming instructor creating a learning exercise in ${language}.
         Your task is to generate a code snippet based on the topic: "${topic}".
         The code snippet should be short, concise, and highly relevant to the topic.
+        The difficulty of the bug should be: ${difficulty}.
+
+        - For "Beginner", introduce a simple syntax error (e.g., missing comma, parenthesis, or a typo in a keyword).
+        - For "Intermediate", introduce a common logical error (e.g., off-by-one error, incorrect loop condition, wrong variable used).
+        - For "Advanced", introduce a more subtle bug related to language features, edge cases, or complex logic.
         
         CRITICAL INSTRUCTIONS:
-        1. Intentionally introduce one or two subtle but common bugs. The bug can be a syntax error, a logical error, an off-by-one error, or incorrect API usage. The bug should be educational.
-        2. Provide the corrected, fully functional version of the code.
-        3. Provide a clear, step-by-step explanation of what the bug was, why it was a bug, and how the fix works.
-        4. Your entire response MUST be a single JSON object.
+        1. The code MUST be in ${language}.
+        2. Intentionally introduce one subtle but common bug based on the difficulty level. The bug should be educational.
+        3. Provide the corrected, fully functional version of the code.
+        4. Provide a clear, step-by-step explanation of what the bug was, why it was a bug, and how the fix works.
+        5. Your entire response MUST be a single, well-formed JSON object. Do not include any markdown formatting like \`\`\`json.
     `;
 
     try {
@@ -34,7 +41,7 @@ export const generateBuggyCode = async (topic: string): Promise<BuggyCodeRespons
                     properties: {
                         buggyCode: {
                             type: Type.STRING,
-                            description: "The code snippet with one or two intentional, educational bugs."
+                            description: "The code snippet with one intentional, educational bug."
                         },
                         correctCode: {
                             type: Type.STRING,

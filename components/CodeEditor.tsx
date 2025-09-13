@@ -1,11 +1,4 @@
 import React from 'react';
-import Editor from 'react-simple-code-editor';
-import { highlight, languages } from 'prismjs/components/prism-core';
-import 'prismjs/components/prism-clike';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-python';
-import 'prismjs/themes/prism-okaidia.css';
-
 import { GenerateIcon, HintIcon, SolutionIcon, SubmitIcon } from '../constants';
 import useStore from '../store';
 import { Card } from './Card';
@@ -74,14 +67,13 @@ export const CodeEditor: React.FC = () => {
             </div>
 
             <div className="flex-grow p-4 relative bg-gray-900/50">
-                <Editor
+                <textarea
                     value={code}
-                    onValueChange={c => setUserCode(c)}
-                    highlight={c => highlight(c, languages[language] || languages.js, language)}
-                    padding={16}
-                    className="w-full h-full font-mono text-base text-gray-200 resize-none border border-transparent focus-within:outline-none focus-within:ring-2 focus-within:ring-cyan-500 transition rounded-md"
+                    onChange={(e) => setUserCode(e.target.value)}
+                    className="w-full h-full font-mono text-base text-gray-200 resize-none border border-transparent focus-within:outline-none focus-within:ring-2 focus-within:ring-cyan-500 transition rounded-md bg-gray-800"
                     placeholder="Your code challenge will appear here..."
                     disabled={!isChallengeActive && !code}
+                    spellCheck="false"
                 />
             </div>
             

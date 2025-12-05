@@ -3,6 +3,7 @@ import React, { useState, useCallback } from 'react';
 import { Header } from './components/Header';
 import { CodeEditor } from './components/CodeEditor';
 import { TutorPanel } from './components/TutorPanel';
+import { TodoList } from './components/TodoList';
 import { generateBuggyCode, getHint } from './services/geminiService';
 import type { TutorMessage } from './types';
 import { MessageSource } from './types';
@@ -106,6 +107,9 @@ const App: React.FC = () => {
           <TutorPanel messages={tutorMessages} isLoading={isLoading} error={error} />
         </div>
       </main>
+      <div className="p-4 max-w-7xl mx-auto w-full">
+        <TodoList />
+      </div>
     </div>
   );
 };

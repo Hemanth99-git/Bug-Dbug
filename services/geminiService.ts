@@ -2,15 +2,17 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { BuggyCodeResponse } from '../types';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
-}
+const API_KEY = process.env.API_KEY;
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = API_KEY ? new GoogleGenAI({ apiKey: API_KEY }) : null;
 
 const model = 'gemini-2.5-flash';
 
 export const generateBuggyCode = async (topic: string): Promise<BuggyCodeResponse> => {
+    if (!ai) {
+        throw new Error("API_KEY environment variable not set");
+    }
+    
     const prompt = `
         You are an expert programming instructor creating a learning exercise.
         Your task is to generate a code snippet based on the topic: "${topic}".
@@ -59,6 +61,10 @@ export const generateBuggyCode = async (topic: string): Promise<BuggyCodeRespons
 };
 
 export const getHint = async (code: string, topic: string, hintCount: number): Promise<string> => {
+    if (!ai) {
+        throw new Error("API_KEY environment variable not set");
+    }
+    
     let hintInstruction: string;
 
     if (hintCount === 0) {

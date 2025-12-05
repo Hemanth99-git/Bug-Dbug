@@ -21,7 +21,7 @@ export const TodoList: React.FC = () => {
     }
 
     const newTodo: TodoItem = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       task: task.trim(),
       date,
       completed: false,
@@ -94,7 +94,7 @@ export const TodoList: React.FC = () => {
           {todos.map((todo) => (
             <div
               key={todo.id}
-              className="flex items-center justify-between bg-gray-700 rounded-md p-4 hover:bg-gray-650 transition-colors"
+              className="flex items-center justify-between bg-gray-700 rounded-md p-4 hover:bg-gray-600 transition-colors"
             >
               <div className="flex items-center flex-1">
                 <input
